@@ -27,24 +27,21 @@ export default function Logs() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Object.keys(logs)
-            .sort((a, b) => {
-              return new Date(a).getTime() - new Date(b).getTime();
-            })
-            .map((date) => {
-              const log = logs[date];
+          {Object.keys(logs).map((date) => {
+            const log = logs[date];
+            const logDate = log.date as Date;
 
-              return (
-                <TableRow
-                  key={date}
-                  className={cn(log.hours < 4 ? 'bg-red-100' : '')}
-                >
-                  <TableCell>{log.date.toDateString()}</TableCell>
-                  <TableCell>{log.hours}</TableCell>
-                  <TableCell>{log.note}</TableCell>
-                </TableRow>
-              );
-            })}
+            return (
+              <TableRow
+                key={date}
+                className={cn(log.hours < 4 ? 'bg-red-100' : '')}
+              >
+                <TableCell>{logDate.toDateString()}</TableCell>
+                <TableCell>{log.hours}</TableCell>
+                <TableCell>{log.note}</TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

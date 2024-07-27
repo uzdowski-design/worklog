@@ -16,9 +16,12 @@ import { DatePicker } from './DatePicker';
 import { useLogStore } from '@/store';
 import { useToast } from '@/components/ui/use-toast';
 import dayjs from 'dayjs';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export function NewLog() {
   const { toast } = useToast();
+
+  const supabase = createClientComponentClient();
 
   const log = useLogStore((state) => state.log);
   const setLog = useLogStore((state) => state.setLog);
@@ -36,19 +39,33 @@ export function NewLog() {
     }
   };
 
-  const submitLog = () => {
+  const submitLog = async () => {
     try {
       validateLog();
-      setLogs(log, dayjs(log.date).format('YYYY-MM-DD'));
+      const date = log.date as Date;
+      const { data, error } = await supabase
+        .from('logs')
+        .upsert({ ...log, date: dayjs(log.date).format('YYYY-MM-DD') })
+        .select('*')
+        .single();
 
-      toast({
-        title: 'Time logged',
-        description: `Logged ${log.hours} hour${
-          log.hours > 1 ? 's' : ''
-        } on ${log.date.toDateString()}`
-      });
-      closeDialog();
-      // call to supabase
+      if (!error) {
+        setLogs(log, dayjs(log.date).format('YYYY-MM-DD'));
+
+        toast({
+          title: 'Time logged',
+          description: `Logged ${log.hours} hour${
+            log.hours > 1 ? 's' : ''
+          } on ${date.toDateString()}`
+        });
+        closeDialog();
+      } else {
+        toast({
+          title: 'Failed to log time',
+          description: error.message,
+          variant: 'destructive'
+        });
+      }
     } catch (error) {
       toast({
         title: 'Failed to log time',
@@ -70,7 +87,7 @@ export function NewLog() {
           <DialogTitle>Log Time</DialogTitle>
           <DialogDescription className="italic">
             Remember, &ldquo;time is money&rdquo;. Invest it wisely with{' '}
-            <span className="font-bold">WorkLog App</span>.
+            <span className="font-bold">WorkLog </span>app.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

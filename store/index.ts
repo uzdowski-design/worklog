@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
-interface ILog {
-  date: Date;
+export interface ILog {
+  date: Date | string;
   hours: number;
   note: string;
 }
@@ -26,5 +26,14 @@ export const useLogStore = create<LogState>()((set) => ({
   setLog: (log: ILog) =>
     set((state: LogState) => ({ log: { ...state.log, ...log } })),
   setLogs: (log: ILog, key: string) =>
-    set((state: LogState) => ({ logs: { ...state.logs, [key]: log } }))
+    set((state: LogState) => {
+      const updateLog = { ...state.logs, [key]: log };
+      const sortedKeys = Object.keys(updateLog).sort();
+      const sorredObject: { [key: string]: ILog } = {};
+
+      for (const key of sortedKeys) {
+        sorredObject[key] = updateLog[key];
+      }
+      return { logs: sorredObject };
+    })
 }));
