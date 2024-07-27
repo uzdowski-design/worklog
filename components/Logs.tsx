@@ -1,3 +1,4 @@
+'use client';
 import {
   Table,
   TableBody,
@@ -7,8 +8,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
+import { useLogStore } from '@/store';
 
 export default function Logs() {
+  // list logs from supabase
+  const logs = useLogStore((state) => state.logs);
+
   return (
     <div>
       <Table>
@@ -17,15 +23,28 @@ export default function Logs() {
           <TableRow>
             <TableHead className="w-2/6">Date</TableHead>
             <TableHead className="w-1/6">Hours</TableHead>
-            <TableHead className="w-3/6">Notes</TableHead>
+            <TableHead className="w-3/6">Note</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="font-medium">2024-07-27</TableCell>
-            <TableCell>12</TableCell>
-            <TableCell>Done login and authentication</TableCell>
-          </TableRow>
+          {Object.keys(logs)
+            .sort((a, b) => {
+              return new Date(a).getTime() - new Date(b).getTime();
+            })
+            .map((date) => {
+              const log = logs[date];
+
+              return (
+                <TableRow
+                  key={date}
+                  className={cn(log.hours < 4 ? 'bg-red-100' : '')}
+                >
+                  <TableCell>{log.date.toDateString()}</TableCell>
+                  <TableCell>{log.hours}</TableCell>
+                  <TableCell>{log.note}</TableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </div>
