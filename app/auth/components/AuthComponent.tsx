@@ -16,9 +16,9 @@ export default function AuthComponent() {
   };
 
   return (
-    <div className="p-5">
+    <div className="p-5 flex flex-col flex-grow">
       <Navbar />
-      <div className="flex justify-center items-center h-80vh">
+      <div className="flex justify-center items-center flex-grow">
         <div className="text-center space-y-5">
           <p className="italic">
             Remember, &ldquo;time is money&rdquo;.
