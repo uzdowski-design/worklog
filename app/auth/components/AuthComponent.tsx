@@ -6,7 +6,15 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 export default function AuthComponent() {
   const supabase = createClientComponentClient();
 
-  const handleLogin = () => {
+  const handleGoogleLogin = () => {
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+  };
+  const handleGithubLogin = () => {
     supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
@@ -26,7 +34,8 @@ export default function AuthComponent() {
             Invest it wisely with <span className="font-bold">WorkLog </span>
             app.
           </p>
-          <Button onClick={handleLogin}>Login with GitHub</Button>
+          <Button onClick={handleGoogleLogin}>Login with Google</Button>
+          <Button onClick={handleGithubLogin}>Login with GitHub</Button>
         </div>
       </div>
     </div>
